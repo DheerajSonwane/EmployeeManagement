@@ -1,0 +1,202 @@
+﻿@model List<EmployeeManagement.Models.Employee>
+
+@{
+    Layout = null;
+}
+
+<!-- Include the partial view for displaying employee details -->
+ 
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Employee Listing</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+
+    <h2>Employee List</h2>
+    <button class="btn btn-success" onclick="openAddEmployeeModal()">Add Employee</button>
+     
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Employee Id</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>City</th>
+                <th>Zip</th>
+                <th>Salary</th>
+                <th>Salary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model)
+            {
+            <tr>
+                <td>
+                    <a href="#" onclick="openEmployeeDetailsModal(@employee.Id)">@employee.Id</a>
+                </td>
+                <td>@employee.FirstName</td>
+                <td>@employee.LastName</td>
+                <td>@employee.City</td>
+                <td>@employee.Zip</td>
+                <td>
+                    <button class="btn btn-info" onclick="openSalaryRecordsModal(@employee.Id)">View</button>
+                </td>
+                <td>
+                    <button class="btn btn-info" onclick="openAddSalaryModal(@employee.Id)">Add</button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Modal for Employee Details -->
+    <div class="modal" tabindex="-1" role="dialog" id="employeeDialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Employee Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="employeeDetails">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Salary Details -->
+    <div class="modal" tabindex="-1" role="dialog" id="salaryDetailsModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Salary Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="salaryDetailsContent">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="addEmployeeModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Employee</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="addEmployeeContent">
+                    <!-- Content will be loaded dynamically -->
+                    <!-- Include the partial view for adding a new employee -->
+                  @*  @Html.Partial("_AddEmployee")*@
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Add Salary Modal -->
+    <div class="modal" tabindex="-1" role="dialog" id="addSalaryModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Salary</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="addSalaryContent">
+                    <!-- Content will be loaded dynamically -->
+                    <!-- Include the partial view for adding salary -->
+                  @*  @Html.Partial("_AddSalary")*@
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        function openAddEmployeeModal() {
+            // Use AJAX to load the partial view into the modal dialog
+            $.get("/Employee/AddEmployee", function (data) {
+                $("#addEmployeeContent").html(data);
+                $("#addEmployeeModal").modal("show");
+            });
+        }
+        function openAddSalaryModal(employeeId) {
+
+            $.ajax({
+                url: "/Employee/AddSalary/" + employeeId,
+                type: "GET",
+                success: function (data) {
+                    $("#addSalaryContent").html(data);
+                    $("#addSalaryModal").modal("show");
+                },
+                error: function (error) {
+                    console.error("Error fetching salary details:", error);
+                }
+            });
+            
+        }
+        function openEmployeeDetailsModal(employeeId) {
+            $.ajax({
+                url: "/Employee/Edit/" + employeeId,
+                type: "GET",
+                success: function (data) {
+                    $("#employeeDetails").html(data);
+                    $("#employeeDialog").modal("show");
+                },
+                error: function (error) {
+                    console.error("Error fetching employee details:", error);
+                }
+            });
+        }
+
+        function openSalaryRecordsModal(employeeId) {
+            $.ajax({
+                url: "/Employee/SalaryRecords/" + employeeId,
+                type: "GET",
+                success: function (data) {
+                    $("#salaryDetailsContent").html(data);
+                    $("#salaryDetailsModal").modal("show");
+                },
+                error: function (error) {
+                    console.error("Error fetching salary details:", error);
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

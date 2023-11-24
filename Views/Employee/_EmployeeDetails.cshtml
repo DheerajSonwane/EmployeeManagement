@@ -1,0 +1,53 @@
+﻿@model EmployeeManagement.Models.Employee
+
+<div>
+    <h2>Edit Employee Details</h2>
+    <form asp-action="Edit" asp-controller="Employee" method="post" id="editEmployeeForm">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="form-group">
+            <label asp-for="FirstName">First Name:</label>
+            <input asp-for="FirstName" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="LastName">Last Name:</label>
+            <input asp-for="LastName" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="City">City:</label>
+            <input asp-for="City" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Zip">Zip:</label>
+            <input asp-for="Zip" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $("#editEmployeeForm").submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    data: $(this).serialize(),
+                    success: function (data) {
+                        // Close the modal
+                        $("#employeeDialog").modal("hide");
+                         
+                    },
+                    error: function (error) {
+                        console.error("Error updating employee details:", error);
+                    }
+                });
+            });
+        }); 
+    </script>
+}
